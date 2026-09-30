@@ -1,13 +1,16 @@
 """Claim state model for FactForge Review 2.
 
-Defines the state enumeration, transition recording model, and main orchestrator
-state structure used across claim-level orchestration.
+Defines the state enumeration, transition recording model, main orchestrator
+state structure, and state transition handling with logging.
 """
 
 from datetime import datetime
 from enum import Enum
+import logging
 from typing import List, Optional
 from pydantic import BaseModel, Field, field_validator
+
+logger = logging.getLogger(__name__)
 
 
 class ClaimState(str, Enum):
@@ -51,3 +54,40 @@ class OrchestratorState(BaseModel):
         if v > 2:
             raise ValueError("retry_count cannot exceed 2.")
         return v
+
+
+def transition_state(
+    state: OrchestratorState,
+    new_state: ClaimState,
+    reason: str = ""
+) -> OrchestratorState:
+    """Transition an OrchestratorState to a new ClaimState and log the transition.
+
+    Args:
+        state: Current claim state object.
+        new_state: Target ClaimState to transition into.
+        reason: Description or justification for the transition.
+
+    Returns:
+        The updated OrchestratorState object.
+    """
+    previous_state = state.state
+    record = TransitionRecord(
+        previous_state=previous_state,
+        new_state=new_state,
+        timestamp=datetime.now(),
+        reason=reason,
+        retry_count=state.retry_count,
+    )
+    state.state = new_state
+    state.transition_history.append(record)
+
+    logger.info(
+        "[%s] %s -> %s | retry=%d | reason=%s",
+        state.claim_id,
+        previous_state.value if isinstance(previous_state, Enum) else previous_state,
+        new_state.value if isinstance(new_state, Enum) else new_state,
+        state.retry_count,
+        reason,
+    )
+    return state
