@@ -1,5 +1,6 @@
 """Unit tests for demo nodes and retry mechanism in FactForge Review 2."""
 
+from orchestration.graph import create_orchestration_graph
 from orchestration.nodes import (
     contradiction_demo_node,
     research_node,
@@ -73,3 +74,58 @@ def test_retry_node_retry_count_limit_does_not_exceed_two():
     state = retry_node(state)
     assert state.retry_count == 2
     assert state.state == ClaimState.RESEARCHING
+
+
+def test_normal_successful_graph_flow():
+    """Verify that normal successful claim flow follows NEW -> RESEARCHING -> VERIFYING -> DETECTING -> RESOLVED."""
+    app = create_orchestration_graph()
+    initial_state = OrchestratorState(claim_id="C101", claim_text="The earth revolves around the sun.")
+    result = app.invoke(initial_state)
+
+    final_state = result["state"] if isinstance(result, dict) else result.state
+    history = result["transition_history"] if isinstance(result, dict) else result.transition_history
+
+    assert final_state == ClaimState.RESOLVED
+    state_sequence = [t.new_state for t in history]
+    assert state_sequence == [
+        ClaimState.RESEARCHING,
+        ClaimState.VERIFYING,
+        ClaimState.DETECTING,
+        ClaimState.RESOLVED,
+    ]
+
+
+def test_retry_graph_flow_max_two_retries():
+    """Verify retry graph flow follows NEW -> RESEARCHING -> VERIFYING -> DETECTING -> RETRY loop up to max 2 retries -> UNRESOLVED."""
+    app = create_orchestration_graph()
+    initial_state = OrchestratorState(
+        claim_id="C102",
+        claim_text="The moon is made of green cheese.",
+        flag="contradiction",
+        retry_reason="Conflicting evidence detected",
+    )
+    result = app.invoke(initial_state)
+
+    final_state = result["state"] if isinstance(result, dict) else result.state
+    retry_count = result["retry_count"] if isinstance(result, dict) else result.retry_count
+    history = result["transition_history"] if isinstance(result, dict) else result.transition_history
+
+    assert final_state == ClaimState.UNRESOLVED
+    assert retry_count == 2
+
+    state_sequence = [t.new_state for t in history]
+    expected_sequence = [
+        ClaimState.RESEARCHING,
+        ClaimState.VERIFYING,
+        ClaimState.DETECTING,
+        ClaimState.RETRY,
+        ClaimState.RESEARCHING,
+        ClaimState.VERIFYING,
+        ClaimState.DETECTING,
+        ClaimState.RETRY,
+        ClaimState.RESEARCHING,
+        ClaimState.VERIFYING,
+        ClaimState.DETECTING,
+        ClaimState.UNRESOLVED,
+    ]
+    assert state_sequence == expected_sequence
