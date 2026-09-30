@@ -1,9 +1,18 @@
+# Byte-compiled / optimized files
 __pycache__/
 *.py[cod]
 *$py.class
-.pytest_cache/
+
+# Environments
 venv/
 .venv/
 env/
-.env
+ENV/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# macOS / OS specific
 .DS_Store

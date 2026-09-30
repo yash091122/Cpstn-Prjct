@@ -1,8 +1,13 @@
-"""Main entry point for FactForge orchestration runner."""
+"""FactForge Orchestration Module Entrypoint."""
+
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-def main():
-    print("FactForge Orchestration Module (Review 2)")
+def main() -> None:
+    logger.info("FactForge Orchestration Module initialized.")
 
 
 if __name__ == "__main__":

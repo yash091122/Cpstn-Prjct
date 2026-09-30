@@ -1,1 +1,1 @@
-"""LangGraph StateGraph definition for FactForge claim orchestration."""
+"""LangGraph workflow definition module placeholder."""

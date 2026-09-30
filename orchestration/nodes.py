@@ -1,1 +1,1 @@
-"""Graph nodes and state transition handlers for FactForge orchestration."""
+"""Graph nodes module placeholder."""

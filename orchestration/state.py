@@ -1,1 +1,1 @@
-"""Claim State Machine definitions and Pydantic schemas for FactForge orchestration."""
+"""Claim state definition module placeholder."""

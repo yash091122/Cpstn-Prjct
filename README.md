@@ -1,14 +1,21 @@
-# FactForge - Review 2 Orchestration Module
+# FactForge - Orchestration Module (Review 2)
 
-This repository contains the Review 2 contribution for the B.Tech capstone project **FactForge**.
+Claim-level orchestration module for B.Tech Capstone Project "FactForge".
 
-## Scope for Phase 2
+## Core Scope (Review 2)
 - Claim-level orchestration
 - Claim state machine
 - Conditional routing
 - Retry mechanism (max 2 retries)
 - State-transition logging
 - Unit tests
+
+## Tech Stack
+- Python 3.11+
+- LangGraph
+- Pydantic
+- pytest
+- Python standard logging
 
 ## Project Structure
 ```
@@ -32,21 +39,19 @@ factforge/
 └── .gitignore
 ```
 
-## Setup & Running
-1. Activate virtual environment or create one:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Run tests:
-   ```bash
-   pytest
-   ```
-4. Run main entry point:
-   ```bash
-   python main.py
-   ```
+## Environment Setup & Installation
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Running Tests
+```bash
+pytest
+```
+
+## Running Main
+```bash
+python main.py
+```

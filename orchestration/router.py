@@ -1,1 +1,1 @@
-"""Conditional router module for FactForge claim-level orchestration graph."""
+"""Conditional router module placeholder."""
